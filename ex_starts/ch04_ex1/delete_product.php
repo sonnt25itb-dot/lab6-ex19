@@ -11,6 +11,6 @@ if ($id === null || $id === false) {
     exit;
 }
 
-delete_product($id);
+(new ProductDB(get_db()))->deleteProduct($id);
 header('Location: index.php?message=' . urlencode('Product deleted.'));
 exit;

@@ -4,8 +4,9 @@ require_once __DIR__ . '/model/product_db.php';
 require_once __DIR__ . '/model/category_db.php';
 
 initialize_database();
-$categories = get_categories();
-$errors = [];
+$productDB = new ProductDB(get_db());
+$categoryDB = new CategoryDB(get_db());
+$categories = $categoryDB->getCategories();
 $successMessage = '';
 
 if (isset($_GET['message'])) {
@@ -107,8 +108,8 @@ if (isset($_GET['message'])) {
 
             <?php foreach ($categories as $category): ?>
                 <div class="category">
-                    <h2><?php echo htmlspecialchars($category['category_name']); ?></h2>
-                    <?php $products = get_products_for_category((int) $category['category_id']); ?>
+                    <h2><?php echo htmlspecialchars($category->getCategoryName()); ?></h2>
+                    <?php $products = $productDB->getProductsForCategory($category->getCategoryId()); ?>
                     <?php if (count($products) > 0): ?>
                         <table>
                             <thead>

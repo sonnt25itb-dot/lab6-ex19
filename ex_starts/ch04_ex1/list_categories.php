@@ -3,7 +3,7 @@ require_once __DIR__ . '/model/db.php';
 require_once __DIR__ . '/model/category_db.php';
 
 initialize_database();
-$categories = get_categories();
+$categories = (new CategoryDB(get_db()))->getCategories();
 $message = '';
 
 if (isset($_GET['message'])) {
@@ -99,9 +99,9 @@ if (isset($_GET['message'])) {
                 <tbody>
                     <?php foreach ($categories as $category): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($category['category_name']); ?></td>
+                            <td><?php echo htmlspecialchars($category->getCategoryName()); ?></td>
                             <td class="delete-link">
-                                <a href="delete_category.php?id=<?php echo (int) $category['category_id']; ?>">Delete</a>
+                                <a href="delete_category.php?id=<?php echo (int) $category->getCategoryId(); ?>">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -20,6 +20,13 @@ if ($categoryId === false || $categoryId === null || $code === '' || $name === '
     exit;
 }
 
-add_product($categoryId, $code, $name, (float) $price, $description);
+$product = new Product();
+$product->setCategoryId((int) $categoryId);
+$product->setProductCode($code);
+$product->setProductName($name);
+$product->setProductPrice((float) $price);
+$product->setDescription($description);
+
+(new ProductDB(get_db()))->addProduct($product);
 header('Location: index.php?message=' . urlencode('Product added.'));
 exit;

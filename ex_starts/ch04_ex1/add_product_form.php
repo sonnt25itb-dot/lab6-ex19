@@ -3,7 +3,7 @@ require_once __DIR__ . '/model/db.php';
 require_once __DIR__ . '/model/category_db.php';
 
 initialize_database();
-$categories = get_categories();
+$categories = (new CategoryDB(get_db()))->getCategories();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -82,7 +82,7 @@ $categories = get_categories();
                     <label for="category_id">Category</label>
                     <select id="category_id" name="category_id" required>
                         <?php foreach ($categories as $category): ?>
-                            <option value="<?php echo (int) $category['category_id']; ?>"><?php echo htmlspecialchars($category['category_name']); ?></option>
+                            <option value="<?php echo (int) $category->getCategoryId(); ?>"><?php echo htmlspecialchars($category->getCategoryName()); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

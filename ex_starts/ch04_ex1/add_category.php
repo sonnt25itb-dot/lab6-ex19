@@ -9,13 +9,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$name = trim($_POST['category_name'] ?? '');
+$name = trim((string) ($_POST['category_name'] ?? ''));
 
 if ($name === '') {
     header('Location: list_categories.php?message=' . urlencode('Category name is required.'));
     exit;
 }
 
-add_category($name);
+$category = new Category();
+$category->setCategoryName($name);
+(new CategoryDB(get_db()))->addCategory($category);
+
 header('Location: list_categories.php?message=' . urlencode('Category added.'));
 exit;
