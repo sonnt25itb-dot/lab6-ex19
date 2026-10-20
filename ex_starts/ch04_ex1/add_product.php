@@ -27,6 +27,7 @@ $product->setProductName($name);
 $product->setProductPrice((float) $price);
 $product->setDescription($description);
 
-(new ProductDB(get_db()))->addProduct($product);
-header('Location: index.php?message=' . urlencode('Product added.'));
+$inserted = (new ProductDB(get_db()))->addProduct($product);
+$message = $inserted ? 'Product added.' : 'A product with this code already exists.';
+header('Location: index.php?message=' . urlencode($message));
 exit;

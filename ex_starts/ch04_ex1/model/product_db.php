@@ -114,19 +114,31 @@ class ProductDB
         return $stmt->fetchAll();
     }
 
-    public function addProduct(Product $product): void
+    public function addProduct(Product $product): bool
     {
         $query = '
             INSERT INTO products (category_id, product_code, product_name, product_price, description)
             VALUES (:category_id, :code, :name, :price, :description)';
         $stmt = $this->db->prepare($query);
-        $stmt->execute([
-            ':category_id' => $product->getCategoryId(),
-            ':code' => $product->getProductCode(),
-            ':name' => $product->getProductName(),
-            ':price' => number_format($product->getProductPrice(), 2, '.', ''),
-            ':description' => $product->getDescription(),
-        ]);
+
+        try {
+            $stmt->execute([
+                ':category_id' => $product->getCategoryId(),
+                ':code' => $product->getProductCode(),
+                ':name' => $product->getProductName(),
+                ':price' => number_format($product->getProductPrice(), 2, '.', ''),
+                ':description' => $product->getDescription(),
+            ]);
+            return true;
+        } catch (PDOException $e) {
+            $check = $this->db->prepare('SELECT 1 FROM products WHERE product_code = :code');
+            $check->execute([':code' => $product->getProductCode()]);
+            if ($check->fetchColumn() !== false) {
+                return false;
+            }
+
+            throw $e;
+        }
     }
 
     public function deleteProduct(int $id): void
@@ -146,7 +158,7 @@ function get_products_for_category(int $categoryId): array
     return (new ProductDB(get_db()))->getProductsForCategory($categoryId);
 }
 
-function add_product(int $categoryId, string $code, string $name, float $price, string $description = ''): void
+function add_product(int $categoryId, string $code, string $name, float $price, string $description = ''): bool
 {
     $product = new Product();
     $product->setCategoryId($categoryId);
@@ -155,7 +167,7 @@ function add_product(int $categoryId, string $code, string $name, float $price, 
     $product->setProductPrice($price);
     $product->setDescription($description);
 
-    (new ProductDB(get_db()))->addProduct($product);
+    return (new ProductDB(get_db()))->addProduct($product);
 }
 
 function delete_product(int $id): void
